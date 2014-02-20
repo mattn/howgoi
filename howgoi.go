@@ -56,6 +56,9 @@ func Query(args... string) ([]Answer, error) {
 }
 
 func QueryN(n int, args... string) (answers []Answer, err error) {
+	if n == -1 {
+		n = 1
+	}
 	query := strings.Replace(strings.Join(args, " "), "?", "", -1)
 
 	q := url.Values{}

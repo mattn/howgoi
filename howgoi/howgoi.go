@@ -9,11 +9,8 @@ import (
 
 var pos = flag.Int("p", 1, "select answer in specified question (default: 1)")
 var all = flag.Bool("a", false, "display the full text of the answer")
-/*
+var num = flag.Int("n", 1, "number of answers to return")
 var link = flag.Bool("l", false, "display only the answer link")
-var color = flag.Bool("c", false, "enable colorized output")
-var clearCache = flag.Bool("C", false, "clear the cache")
-*/
 
 func main() {
 	flag.Usage = func() {
@@ -31,9 +28,7 @@ optional arguments:
   -p POS              select answer in specified position (default: 1)
   -a                  display the full text of the answer
   -l                  display only the answer link
-  -c                  enable colorized output
   -n NUM_ANSWERS      number of answers to return
-  -C, --clear-cache   clear the cache
 `[1:])
 	}
 	flag.Parse()
@@ -43,7 +38,7 @@ optional arguments:
 		os.Exit(0)
 	}
 
-	answers, err := howgoi.Query(flag.Args()...)
+	answers, err := howgoi.QueryN(*num, flag.Args()...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err.Error())
 		os.Exit(1)
@@ -57,9 +52,12 @@ optional arguments:
 		if n >= len(answers) || n < 0 {
 			n = 0
 		}
-		fmt.Print(answers[n].Code)
-	} else {
-		for _, answer := range answers {
+		answers = answers[n:n+1]
+	}
+	for _, answer := range answers {
+		if *link {
+			fmt.Println(answer.Link)
+		} else {
 			fmt.Println(answer.Code)
 		}
 	}
