@@ -52,7 +52,7 @@ optional arguments:
 		if n >= len(answers) || n < 0 {
 			n = 0
 		}
-		answers = answers[n:n+1]
+		answers = answers[n : n+1]
 	}
 	for _, answer := range answers {
 		if *link {

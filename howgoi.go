@@ -51,11 +51,11 @@ func getAnswers(u string) (ans *Answer, err error) {
 	}, nil
 }
 
-func Query(args... string) ([]Answer, error) {
+func Query(args ...string) ([]Answer, error) {
 	return QueryN(1, args...)
 }
 
-func QueryN(n int, args... string) (answers []Answer, err error) {
+func QueryN(n int, args ...string) (answers []Answer, err error) {
 	if n == -1 {
 		n = 1
 	}
