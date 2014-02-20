@@ -15,7 +15,7 @@ var link = flag.Bool("l", false, "display only the answer link")
 func main() {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, `
-usage: howgoi [-h] [-p POS] [-a] [-l] [-c] [-n NUM_ANSWERS] [-C]
+usage: howgoi [-h] [-p POS] [-a] [-l] [-n NUM_ANSWERS]
               [QUERY [QUERY ...]]
 
 instant coding answers via the command line
