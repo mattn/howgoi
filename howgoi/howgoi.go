@@ -9,9 +9,11 @@ import (
 
 var pos = flag.Int("p", 1, "select answer in specified question (default: 1)")
 var all = flag.Bool("a", false, "display the full text of the answer")
+/*
 var link = flag.Bool("l", false, "display only the answer link")
 var color = flag.Bool("c", false, "enable colorized output")
 var clearCache = flag.Bool("C", false, "clear the cache")
+*/
 
 func main() {
 	flag.Usage = func() {
@@ -36,7 +38,7 @@ optional arguments:
 	}
 	flag.Parse()
 
-	if flag.NArg() == 0 {
+	if flag.NArg() == 0 || *pos < 1 {
 		flag.Usage()
 		os.Exit(0)
 	}
@@ -48,12 +50,17 @@ optional arguments:
 	}
 	if len(answers) == 0 {
 		fmt.Fprintln(os.Stderr, "Sorry, couldn't find any help with that topic")
+		os.Exit(1)
 	}
 	if *all == false {
-		fmt.Print(answers[0])
+		n := *pos - 1
+		if n >= len(answers) || n < 0 {
+			n = 0
+		}
+		fmt.Print(answers[n].Code)
 	} else {
 		for _, answer := range answers {
-			fmt.Println(answer)
+			fmt.Println(answer.Code)
 		}
 	}
 }

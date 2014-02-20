@@ -1,17 +1,61 @@
 package howgoi
 
 import (
+	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"net/url"
 	"strings"
 )
 
-func Query(args... string) ([]string, error) {
+type Answer struct {
+	Code string
+	Link string
+	Tags []string
+}
+
+func getAnswers(u string) (ans *Answer, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = errors.New(fmt.Sprint(e))
+		}
+	}()
+	uri, err := url.Parse(u)
+	if err != nil {
+		return nil, err
+	}
+	uri.Query().Set("answertab", "votes")
+	doc, err := goquery.NewDocument(uri.String())
+	if err != nil {
+		return nil, err
+	}
+	answer := doc.Find(".answer").First()
+	code := answer.Find("pre")
+	if code == nil {
+		code = answer.Find("code").First()
+	}
+	if code == nil {
+		code = answer.Find(".post-text").First()
+	}
+	text := code.Text()
+	if text == "" {
+		return nil, errors.New("Anseer Not Found")
+	}
+	tags := doc.Find(".post-tag").Map(func(_ int, a *goquery.Selection) string {
+		return a.Text()
+	})
+	return &Answer{
+		Code: text,
+		Link: u,
+		Tags: tags,
+	}, nil
+}
+
+func Query(args... string) ([]Answer, error) {
 	return QueryN(1, args...)
 }
 
-func QueryN(n int, args... string) ([]string, error) {
+func QueryN(n int, args... string) (answers []Answer, err error) {
 	query := strings.Replace(strings.Join(args, " "), "?", "", -1)
 
 	q := url.Values{}
@@ -51,26 +95,11 @@ func QueryN(n int, args... string) ([]string, error) {
 		})
 	}
 
-	codes := []string{}
 	for _, u = range urls {
-		uri, err := url.Parse(u)
-		if err != nil {
-			continue
+		answer, err := getAnswers(u)
+		if err == nil {
+			answers = append(answers, *answer)
 		}
-		uri.Query().Set("answertab", "votes")
-		doc, err = goquery.NewDocument(uri.String())
-		if err != nil {
-			return nil, err
-		}
-		answer := doc.Find(".answer").First()
-		code := answer.Find("pre")
-		if code == nil {
-			code = answer.Find("code").First()
-		}
-		if code == nil {
-			code = answer.Find(".post-text").First()
-		}
-		codes = append(codes, code.Text())
 	}
-	return codes, nil
+	return answers, nil
 }
