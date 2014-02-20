@@ -30,7 +30,7 @@ func getAnswers(u string) (ans *Answer, err error) {
 		return nil, err
 	}
 	answer := doc.Find(".answer").First()
-	code := answer.Find("pre")
+	code := answer.Find("pre").First()
 	if code == nil {
 		code = answer.Find("code").First()
 	}
