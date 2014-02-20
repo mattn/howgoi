@@ -58,7 +58,10 @@ optional arguments:
 		if *link {
 			fmt.Println(answer.Link)
 		} else {
-			fmt.Println(answer.Code)
+			fmt.Print(answer.Code)
+			if len(answers) > 1 {
+				fmt.Println()
+			}
 		}
 	}
 }
